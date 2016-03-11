@@ -14,6 +14,7 @@ app.get('/', function(request, response) {
 });
 
 app.post('/github_webhook', function(request, response) {
+  console.log(request);
   console.log(request.body);
   response.sendStatus(200);
 });
