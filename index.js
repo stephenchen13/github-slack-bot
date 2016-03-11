@@ -16,7 +16,11 @@ app.get('/', function(request, response) {
 });
 
 app.post('/github_webhook', function(request, response) {
-  console.log(request.body);
+  var issuesURL = request.body.repository.issues_url;
+  var labelsURL = issuesURL + "/labels";
+  console.log(issuesURL);
+  console.log(labelsURL);
+
   response.sendStatus(200);
 });
 
