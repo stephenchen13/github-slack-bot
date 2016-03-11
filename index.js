@@ -13,6 +13,11 @@ app.get('/', function(request, response) {
   response.render('pages/index');
 });
 
+app.post('/github_webhook', function(request, response) {
+  console.log(request.body);
+  response.sendStatus(200);
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
