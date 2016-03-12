@@ -17,13 +17,16 @@ app.get('/', function(request, response) {
 });
 
 app.post('/github_webhook', function(request, response) {
-  var issuesURL = request.body.repository.issues_url;
-  var labelsURL = issuesURL + "/labels";
-  var labelsURL = 'https://api.github.com/repos/stephenchen13/gboom/issues/5/labels';
+  var number = request.body.number;
+  var pullRequestURL = request.body.pull_request.url;
+  var issueURL = request.body.pull_request.issue_url;
+  var labelsURL = issueURL + "/labels";
 
-  console.log(issuesURL);
+  console.log(pullRequestURL);
+  console.log(issueURL);
   console.log(labelsURL);
 
+  //check if action is labeled
   httpRequest({
     url: labelsURL,
     headers: {
@@ -34,19 +37,32 @@ app.post('/github_webhook', function(request, response) {
     console.log(error);
     console.log(response.statusCode);
     console.log(body);
+    console.log(pullRequestURL);
+
     if (!error && response.statusCode == 200) {
       var labels = JSON.parse(body);
       var reviewLabelPresent = false;
       labels.forEach(function(label, index, array) {
-        var labelRegExp = new RegExp('bug', 'i');
+        console.log(label.name);
+        var labelRegExp = new RegExp('pending review', 'i');
         if (labelRegExp.test(label.name)) {
           reviewLabelPresent = true;
         }
       });
       console.log(reviewLabelPresent);
-
       if (reviewLabelPresent) {
-        //post to slack
+        httpRequest({
+          url: 'https://hooks.slack.com/services/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',
+          method: 'POST',
+          json: true,
+          body: {
+            text: 'New Migration PR up for review: <' + pullRequestURL + '>'
+          }
+        }, function(error, response, body) {
+          console.log(response.statusCode)
+          console.log(body);
+          console.log(error);
+        });
       }
     }
   });
