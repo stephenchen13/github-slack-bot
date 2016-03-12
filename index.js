@@ -19,14 +19,16 @@ app.get('/', function(request, response) {
 app.post('/github_webhook', function(request, response) {
   var issuesURL = request.body.repository.issues_url;
   var labelsURL = issuesURL + "/labels";
+  var labelsURL = 'https://api.github.com/repos/stephenchen13/gboom/issues/5/labels';
+
   console.log(issuesURL);
   console.log(labelsURL);
 
-  var labelsURL = 'https://api.github.com/repos/stephenchen13/gboom/issues/5/labels';
   httpRequest({
     url: labelsURL,
     headers: {
-      'User-Agent': 'stephenchen13'
+      'User-Agent': 'stephenchen13',
+      'Authorization': 'token ' + process.env.OAUTH_TOKEN
     }
   }, function(error, response, body) {
     console.log(error);
