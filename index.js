@@ -23,7 +23,12 @@ app.post('/github_webhook', function(request, response) {
   console.log(labelsURL);
 
   var labelsURL = 'https://api.github.com/repos/stephenchen13/gboom/issues/5/labels';
-  httpRequest(labelsURL, function(error, response, body) {
+  httpRequest({
+    url: labelsURL,
+    headers: {
+      'User-Agent': 'stephenchen13'
+    }
+  }, function(error, response, body) {
     console.log(error);
     console.log(response.statusCode);
     console.log(body);
