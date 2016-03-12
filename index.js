@@ -23,6 +23,9 @@ app.post('/github_webhook', function(request, response) {
   console.log(labelsURL);
 
   httpRequest(labelsURL, function(error, response, body) {
+    console.log(error);
+    console.log(response.statusCode);
+    console.log(body);
     if (!error && response.statusCode == 200) {
       console.log(body);
     }
