@@ -33,8 +33,9 @@ app.post('/github_webhook', function(request, response) {
     console.log(response.statusCode);
     console.log(body);
     if (!error && response.statusCode == 200) {
+      var labels = JSON.parse(body);
       var reviewLabelPresent = false;
-      body.forEach(function(label, index, array) {
+      labels.forEach(function(label, index, array) {
         var labelRegExp = new RegExp('bug', 'i');
         if (labelRegExp.test(label.name)) {
           reviewLabelPresent = true;
