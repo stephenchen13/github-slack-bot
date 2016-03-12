@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var httpRequest = require('request');
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -20,6 +21,12 @@ app.post('/github_webhook', function(request, response) {
   var labelsURL = issuesURL + "/labels";
   console.log(issuesURL);
   console.log(labelsURL);
+
+  httpRequest(labelsURL, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log(body);
+    }
+  });
 
   response.sendStatus(200);
 });
