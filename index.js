@@ -33,7 +33,17 @@ app.post('/github_webhook', function(request, response) {
     console.log(response.statusCode);
     console.log(body);
     if (!error && response.statusCode == 200) {
-      console.log(body);
+      var reviewLabelPresent = false;
+      body.forEach(function(label, index, array) {
+        if (label.name == 'bug') {
+          reviewLabelPresent = true;
+        }
+      });
+      console.log(reviewLabelPresent);
+
+      if (reviewLabelPresent) {
+        //post to slack
+      }
     }
   });
 
