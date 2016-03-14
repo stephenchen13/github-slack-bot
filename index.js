@@ -43,7 +43,7 @@ app.post('/github_webhook', function(request, response) {
         });
         if (reviewLabelPresent) {
           httpRequest({
-            url: 'https://hooks.slack.com/services/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',
+            url: process.env.SLACK_WEBHOOK_URL,
             method: 'POST',
             json: true,
             body: {
