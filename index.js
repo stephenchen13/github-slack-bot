@@ -28,14 +28,10 @@ app.post('/github_webhook', function(request, response) {
     httpRequest({
       url: labelsURL,
       headers: {
-        'User-Agent': 'stephenchen13',
+        'User-Agent': process.env.GITHUB_USER_AGENT,
         'Authorization': 'token ' + process.env.OAUTH_TOKEN
       }
     }, function(error, response, body) {
-
-      console.log(error);
-      console.log(response.statusCode);
-      console.log(body);
       if (!error && response.statusCode == 200) {
         var labels = JSON.parse(body);
         var reviewLabelPresent = false;
@@ -50,8 +46,6 @@ app.post('/github_webhook', function(request, response) {
             migrationLabelPresent = true;
           }
         });
-        console.log(reviewLabelPresent);
-        console.log(migrationLabelPresent);
         if (reviewLabelPresent && migrationLabelPresent) {
           httpRequest({
             url: process.env.SLACK_WEBHOOK_URL,
@@ -61,9 +55,6 @@ app.post('/github_webhook', function(request, response) {
               text: 'New Migration PR up for review: <' + pullRequestURL + '>'
             }
           }, function(error, response, body) {
-            console.log(error);
-            console.log(response.statusCode);
-            console.log(body);
           });
         }
       }
