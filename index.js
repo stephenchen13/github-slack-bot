@@ -20,6 +20,7 @@ app.post('/github_webhook', function(request, response) {
   var action = request.body.action;
   var number = request.body.number;
   var pullRequestURL = request.body.pull_request.url;
+  var patchURL = request.body.pull_request.patch_url;
   var issueURL = request.body.pull_request.issue_url;
   var labelsURL = issueURL + "/labels";
 
@@ -32,16 +33,26 @@ app.post('/github_webhook', function(request, response) {
       }
     }, function(error, response, body) {
 
+      console.log(error);
+      console.log(response.statusCode);
+      console.log(body);
       if (!error && response.statusCode == 200) {
         var labels = JSON.parse(body);
         var reviewLabelPresent = false;
+        var migrationLabelPresent = false;
         labels.forEach(function(label, index, array) {
-          var labelRegExp = new RegExp('pending review', 'i');
-          if (labelRegExp.test(label.name)) {
+          var pendingLabelRegExp = new RegExp('pending review', 'i');
+          var migrationLabelRegExp = new RegExp('migration', 'i');
+          if (pendingLabelRegExp.test(label.name)) {
             reviewLabelPresent = true;
           }
+          if (migrationLabelRegExp.test(label.name)) {
+            migrationLabelPresent = true;
+          }
         });
-        if (reviewLabelPresent) {
+        console.log(reviewLabelPresent);
+        console.log(migrationLabelPresent);
+        if (reviewLabelPresent && migrationLabelPresent) {
           httpRequest({
             url: process.env.SLACK_WEBHOOK_URL,
             method: 'POST',
@@ -50,6 +61,9 @@ app.post('/github_webhook', function(request, response) {
               text: 'New Migration PR up for review: <' + pullRequestURL + '>'
             }
           }, function(error, response, body) {
+            console.log(error);
+            console.log(response.statusCode);
+            console.log(body);
           });
         }
       }
