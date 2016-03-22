@@ -19,7 +19,7 @@ app.get('/', function(request, response) {
 app.post('/github_webhook', function(request, response) {
   var action = request.body.action;
   var number = request.body.number;
-  var pullRequestURL = request.body.pull_request.url;
+  var pullRequestURL = request.body.pull_request.html_url;
   var patchURL = request.body.pull_request.patch_url;
   var issueURL = request.body.pull_request.issue_url;
   var labelsURL = issueURL + "/labels";
