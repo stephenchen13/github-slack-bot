@@ -52,7 +52,9 @@ app.post('/github_webhook', function(request, response) {
             method: 'POST',
             json: true,
             body: {
-              text: 'New Migration PR up for review: <' + pullRequestURL + '>'
+              username: 'Rick Sanchez',
+              icon_emoji: ':rick:',
+              text: "M-M-Morty! There's a m-m-migration to review! Get off your ass! *burp* <" + pullRequestURL + ">"
             }
           }, function(error, response, body) {
           });
