@@ -2,6 +2,13 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var httpRequest = require('request');
+if (process.env.REDISTOGO_URL) {
+  var rtg = require('url').parse(process.env.REDISTOGO_URL);
+  var redis = require('redis').createClient(rtg.port, rtg.hostname);
+  redis.auth(rtg.auth.split(":")[1]);
+} else {
+  var redis = require('redis').createClient();
+}
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -59,18 +66,25 @@ app.post('/github_webhook', function(request, response) {
           }
         });
         if (reviewLabelPresent && migrationLabelPresent) {
-          var message = messages[Math.floor(Math.random() * messages.length)];
+          var redisKey = "redis:" + pullRequestURL;
+          redis.watch(redisKey);
+          redis.get(redisKey, function(err, reply) {
+            if (!err && !reply) {
+              redis.set(redisKey, true);
+              var message = messages[Math.floor(Math.random() * messages.length)];
 
-          httpRequest({
-            url: process.env.SLACK_WEBHOOK_URL,
-            method: 'POST',
-            json: true,
-            body: {
-              username: 'Rick Sanchez',
-              icon_emoji: ':rick:',
-              text: message + " <" + pullRequestURL + ">"
+              httpRequest({
+                url: process.env.SLACK_WEBHOOK_URL,
+                method: 'POST',
+                json: true,
+                body: {
+                  username: 'Rick Sanchez',
+                  icon_emoji: ':rick:',
+                  text: message + " <" + pullRequestURL + ">"
+                }
+              }, function(error, response, body) {
+              });
             }
-          }, function(error, response, body) {
           });
         }
       }
