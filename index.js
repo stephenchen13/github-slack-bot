@@ -23,6 +23,18 @@ app.post('/github_webhook', function(request, response) {
   var patchURL = request.body.pull_request.patch_url;
   var issueURL = request.body.pull_request.issue_url;
   var labelsURL = issueURL + "/labels";
+  var messages = [
+    "M-M-Morty! There's a m-m-migration to review! Let's go! *burp*",
+    "Ohhh yeahhh, you gotta get schwifty!",
+    "They're robots Morty! It's OK to shoot them! They're just robots!",
+    "WUBBA LUBBA DUB DUB!",
+    "You're not gonna believe this, because it usually never happens, but I made a mistake",
+    "This isn't Game of Thrones, Morty",
+    "I'm sorry Summer, your opinion means very little to me",
+    "Yo! What up my glip glops!",
+    "I'm not looking for judgement, just a yes or no. Can you assimilate a giraffe?",
+    "You really are your father's children. Think for yourselves, don't be sheep."
+  ];
 
   if (action === 'labeled') {
     httpRequest({
@@ -47,6 +59,8 @@ app.post('/github_webhook', function(request, response) {
           }
         });
         if (reviewLabelPresent && migrationLabelPresent) {
+          var message = messages[Math.floor(Math.random() * messages.length)];
+
           httpRequest({
             url: process.env.SLACK_WEBHOOK_URL,
             method: 'POST',
@@ -54,7 +68,7 @@ app.post('/github_webhook', function(request, response) {
             body: {
               username: 'Rick Sanchez',
               icon_emoji: ':rick:',
-              text: "M-M-Morty! There's a m-m-migration to review! Get off your ass! *burp* <" + pullRequestURL + ">"
+              text: message + " <" + pullRequestURL + ">"
             }
           }, function(error, response, body) {
           });
